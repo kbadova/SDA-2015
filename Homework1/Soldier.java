@@ -7,14 +7,11 @@ public class Soldier {
 
 	public static LinkedList<Integer> convertToInt(String str) {
 		soldiers = new LinkedList<Integer>();
-		for (int i = 0; i < str.length(); i++) {
-			if (Character.isDigit(str.charAt(i))) {
-				String doubleNumber = str.charAt(i) + "";
-				while (Character.isDigit(str.charAt(i + 1))) {
-					doubleNumber += str.charAt(i + 1) + "";
-					i += 1;
-				}
-				soldiers.add(Integer.parseInt(doubleNumber));
+		if(str.equals("[]")){	
+		}else{
+		String[] newString = str.substring(1, str.length() - 1).split(", ");			
+		for(String element:newString){
+			soldiers.add(Integer.parseInt(element));
 			}
 		}
 		return soldiers;

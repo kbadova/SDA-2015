@@ -8,9 +8,6 @@ import java.util.Scanner;
 
 public class Tester {
 	public static void main(String[] args) throws FileNotFoundException{
-//		Scanner scanner = new Scanner(System.in);
-//		System.out.println(scanner.nextLine().toString());
-//		String[] news = scanner.nextLine().split("/n");
 		FrontBookkeeper61866 object = new FrontBookkeeper61866();
 		String input = "regiment_Stoykov = [1, 2, 3]\n"
 				+ "show regiment_Stoykov\n"
@@ -29,9 +26,8 @@ public class Tester {
 				+ "show division_Dimitroff\n"
 				+ "soldiers 2..3 from division_Dimitroff died heroically \n"
 				+ "show regiment_Stoykov\n" + "show brigade_Ignatov\n"
-				+ "show division_Dimitroff\n";
+				+ "show division_Dimitroff\n";;
 		String[] new_input = input.split("\n");
 		object.updateFront(new_input);
-		
 	}
 }

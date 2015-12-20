@@ -2,7 +2,6 @@ package homework1;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 public class FrontBookkeeper61866 implements IFrontBookkeeper {
 	private HashMap<String, LinkedList<Integer>> mapOfSoldiers = new HashMap<String, LinkedList<Integer>>();
@@ -11,105 +10,101 @@ public class FrontBookkeeper61866 implements IFrontBookkeeper {
 	}
 
 	public String updateFront(String[] news) {
-		putSoldiersInMap(news);
-		
 		for (int i = 0; i < news.length; i++) {
 			String[] splitted = news[i].split(" ");
-			if (news[i].contains("show")) {
 
-				if (splitted.length == 2) {
-					System.out.println(mapOfSoldiers.get(splitted[1]));
-				} else if (splitted.length == 3) {
-					getKeyFromValue(mapOfSoldiers, splitted[2]);
-					System.out.println(getKeyFromValue(mapOfSoldiers,
-							splitted[2]));
-				}
+			if (news[i].contains("=")) {
+				putSoldiersInMap(news[i]);
+			}
+
+			if (news[i].contains("show")) {
+				showSoldier(splitted);
+
 			}
 			if (news[i].contains("attached")) {
-				LinkedList<Integer> initialList = mapOfSoldiers
-						.get(splitted[3]);
-				LinkedList<Integer> secondlList = mapOfSoldiers
+				LinkedList<Integer> firstSoldier = mapOfSoldiers
 						.get(splitted[0]);
-
-				for (int j = 0; j < secondlList.size(); j++) {
-					if (news[i].contains("after")) {
-						for (int k = 0; k < initialList.size(); k++) {
-							if (initialList.get(k) == Integer
-									.parseInt(splitted[6])) {
-								initialList.add(secondlList.get(j));
-							}
-						}
-						if (mapOfSoldiers.containsValue(initialList)) {
-							for (String key : mapOfSoldiers.keySet()) {
-								if (!key.equals(splitted[3])) {
-									LinkedList<Integer> listOfCommonValues = mapOfSoldiers
-											.get(key);
-									if (listOfCommonValues.equals(initialList)) {
-										listOfCommonValues.clear();
-
-									}
-
-								}
-							}
-
-						}
-						break;
-					}
-					initialList.add(secondlList.get(j));
+				LinkedList<Integer> secondSoldier = mapOfSoldiers
+						.get(splitted[3]);
+				if (news[i].contains("after")) {
+					attachAfter(firstSoldier, secondSoldier, splitted[6],
+							splitted[3]);
+				} else {
+					attachedSoldiers(firstSoldier, secondSoldier, news[i]);
 				}
 			}
 			if (news[i].contains("died")) {
-				String deadSoldier = splitted[3];
+				LinkedList<Integer> deadSoldier = mapOfSoldiers
+						.get(splitted[3]);
 				String rangeIndexes = splitted[1];
-				char firstIndexSplit = rangeIndexes.charAt(0);
-				char lastIndexSplit = rangeIndexes.charAt(3);
-				LinkedList<Integer> deadListIndexes = new LinkedList<Integer>();
-				LinkedList<Integer> listOfSoldier = mapOfSoldiers
-						.get(deadSoldier);
-				for (int k = 0; k < listOfSoldier.size(); k++) {
-					if (listOfSoldier.get(k) == Integer
-							.parseInt(firstIndexSplit + "")) {
-						while (listOfSoldier.get(k) != Integer
-								.parseInt(lastIndexSplit + "")) {
-							deadListIndexes.add(listOfSoldier.get(k));
-							k += 1;
-						}
-						deadListIndexes.add(listOfSoldier.get(k));
-					}
-				}
-				for (String value : mapOfSoldiers.keySet()) {
-					if (mapOfSoldiers.get(value).containsAll(deadListIndexes)) {
-						mapOfSoldiers.get(value).removeAll(deadListIndexes);
-					}
-				}
+				dieSoldier(deadSoldier, rangeIndexes);
 			}
 
 		}
-
-		System.out.println(mapOfSoldiers);
 		return null;
 	}
 
-	public static String getKeyFromValue(
-			HashMap<String, LinkedList<Integer>> mapOfSoldiers2, String value) {
+	public String getKeyFromValue(
+			HashMap<String, LinkedList<Integer>> mapOfSoldiers, String value) {
 		String resultString = "";
-		for (String o : mapOfSoldiers2.keySet()) {
-			if (mapOfSoldiers2.get(o).contains(Integer.parseInt(value))) {
+		for (String o : mapOfSoldiers.keySet()) {
+			if (mapOfSoldiers.get(o).contains(Integer.parseInt(value))) {
 				resultString += " " + o;
 			}
 		}
 		return resultString;
 	}
 
-	public HashMap<String, LinkedList<Integer>> putSoldiersInMap(String[] news) {
-		for (int i = 0; i < news.length; i++) {
-			if (news[i].contains("=")) {
-				String[] soldiersCharacteristics = news[i].split(" = ");
-				mapOfSoldiers.put(soldiersCharacteristics[0],
-						Soldier.convertToInt(soldiersCharacteristics[1]));
+	public HashMap<String, LinkedList<Integer>> putSoldiersInMap(
+			String currentElement) {
+		String[] soldiersCharacteristics = currentElement.split(" = ");
+		mapOfSoldiers.put(soldiersCharacteristics[0],
+				Soldier.convertToInt(soldiersCharacteristics[1]));
+		return mapOfSoldiers;
+	}
+
+	public void showSoldier(String[] currentSplit) {
+		if (currentSplit.length == 2) {
+			System.out.println(mapOfSoldiers.get(currentSplit[1]));
+		} else if (currentSplit.length == 3) {
+			System.out.println(getKeyFromValue(mapOfSoldiers, currentSplit[2]));
+		}
+	}
+
+	public void attachedSoldiers(LinkedList<Integer> firstSoldier,
+			LinkedList<Integer> secondSoldier, String news) {
+		secondSoldier.addAll(firstSoldier);
+	}
+
+	public void attachAfter(LinkedList<Integer> firstSoldier,
+			LinkedList<Integer> secondSoldier, String index, String splitted) {
+		secondSoldier.addAll(Integer.parseInt(index), firstSoldier);
+		if (mapOfSoldiers.containsValue(secondSoldier)) {
+			deleteSoldiers(splitted, secondSoldier);
+		}
+	}
+
+	public void deleteSoldiers(String name, LinkedList<Integer> secondSoldier) {
+		for (String key : mapOfSoldiers.keySet()) {
+			LinkedList<Integer> listOfCommonValues = mapOfSoldiers.get(key);
+			if (!key.equals(name) && listOfCommonValues.equals(secondSoldier)) {
+				listOfCommonValues.clear();
 			}
 		}
-		return mapOfSoldiers;
+	}
+
+	public void dieSoldier(LinkedList<Integer> deadSoldier, String rangeNumbers) {
+		String[] numbers = rangeNumbers.split("\\..");
+		int firstIndex = deadSoldier.indexOf(Integer.parseInt(numbers[0]));
+		int secondtIndex = deadSoldier.indexOf(Integer.parseInt(numbers[1]));
+		LinkedList<Integer> sub = new LinkedList<>(deadSoldier.subList(
+				firstIndex, secondtIndex + 1));
+		for (String key : mapOfSoldiers.keySet()) {
+			LinkedList<Integer> listOfCommonValues = mapOfSoldiers.get(key);
+			if (listOfCommonValues.containsAll(sub)) {
+				listOfCommonValues.removeAll((sub));
+			}
+		}
 	}
 
 	public String toString() {
